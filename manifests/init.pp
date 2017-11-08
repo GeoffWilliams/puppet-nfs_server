@@ -20,20 +20,19 @@
 #
 # ```
 #   share_hash => {
-#     "/shared/foo" => {
-#       "client" => "192.168.0.10(ro) 192.168.0.11(rw),
+#     "/scratch/foo" => {
+#       "client" => "192.168.0.10(ro) 192.168.0.11(rw)",
 #     },
-#     "/shared/bar" => {
+#     "/scratch/bar" => {
 #       "client" => "192.168.*(ro)",
-#       "owner" => "bar",
-#       "group" => "bar",
-#       "mode    => "0770",
-#     }
-#     "/shared/special" => {
-#       "client"     => "192.168.1.*(ro)",
+#       "owner"  => "foo",
+#       "group"  => "bar",
+#       "mode"   => "0755",
+#     },
+#     "/scratch/testcase" => {
+#       "client"     => "*(ro)",
 #       "manage_dir" => false,
-#     }
-#   }
+#     },
 # ```
 #
 # @param package Name of nfs kernel server package to install
@@ -43,18 +42,18 @@
 # @param default_share_owner Default owner of shares (override in hash)
 # @param default_share_group Default group of shares (override in hash)
 class nfs_server(
-    $package                = $nfs_server::params::package,
-    $manage_package         = true,
-    $ensure_package         = present,
-    $share_hash             = {},
-    $default_owner          = "nobody",
-    $default_group          = "nogroup",
-    $default_mode           = "0770",
-    $manage_service         = true,
-    $service                = $nfs_server::params::service,
-    $service_ensure         = running,
-    $service_enable         = true,
-    $exports                = "/etc/exports",
+    String                $package        = $nfs_server::params::package,
+    Boolean               $manage_package = true,
+    Enum[present,absent]  $ensure_package = present,
+    Hash                  $share_hash     = {},
+    String                $default_owner  = $nfs_server::params::default_owner,
+    String                $default_group  = $nfs_server::params::default_group,
+    String                $default_mode   = "0770",
+    Boolean               $manage_service = true,
+    String                $service        = $nfs_server::params::service,
+    Enum[running,stopped] $service_ensure = running,
+    Boolean               $service_enable = true,
+    String                $exports        = "/etc/exports",
 ) inherits nfs_server::params {
 
   if $manage_package {
@@ -75,11 +74,12 @@ class nfs_server(
     # manage the shared directory with puppet unless we were told not to (it
     # could be a mounted elsewhere)
     if pick($opts["manage_dir"],true) {
+      $mode = pick($opts['mode'], $default_mode)
       file { $share_dir:
         ensure => directory,
         owner  => pick($opts['owner'], $default_owner),
         group  => pick($opts['group'], $default_group),
-        mode   => pick($opts['mode'], $default_mode),
+        mode   => $mode,
       }
     }
 
@@ -97,6 +97,7 @@ class nfs_server(
     command     => "exportfs -a",
     path        => ["/usr/sbin", "/sbin"],
     refreshonly => true,
+    require     => Service[$service],
   }
 
 

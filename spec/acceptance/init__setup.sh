@@ -3,4 +3,6 @@
 # to setup any prequisite test conditions, etc
 useradd foo
 useradd bar
-
+mkdir -p /scratch/testcase
+echo hello > /scratch/testcase/test
+mkdir /tmp/testcase_mount

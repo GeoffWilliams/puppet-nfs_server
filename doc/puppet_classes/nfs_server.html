@@ -62,6 +62,11 @@
       <div id="content"><h1>Puppet Class: nfs_server</h1>
 <div class="box_info">
   
+  <dl>
+    <dt>Inherits:</dt>
+    <dd><span class='object_link'><a href="nfs_server_3A_3Aparams.html" title="puppet_classes::nfs_server::params (puppet_class)">nfs_server::params</a></span></dd>
+  </dl>
+  
   
   <dl>
     <dt>Defined in:</dt>
@@ -75,39 +80,37 @@
 <div class="docstring">
   <div class="discussion">
     
-<h1 id="label-Class-3A+nfs_server">Class: nfs_server</h1>
+<p>Nfs_server</p>
 
-<p>Full description of class nfs_server here.</p>
+<p>Support for NFSv4 kernel server on Linux</p>
 
-<h2 id="label-Parameters">Parameters</h2>
+<p>The main source of configuration is the <code>share_hash</code> variable
+which is responsible for creating and exporting each shared directory. It
+has the form:</p>
 
-<p>Document parameters here.</p>
-<ul><li>
-<p><code>sample parameter</code> Explanation of what this parameter affects
-and what it defaults to. e.g. “Specify one or more upstream ntp servers as
-an array.”</p>
-</li></ul>
+<pre class="code ruby"><code class="ruby">share_hash =&gt; {
+    &quot;directory_name&quot; =&gt; {
+      client =&gt; client(share_option1,...,share_optionN) client(share_option1,...,share_optionN),
+      owner  =&gt; OWNER_OF_SHARE_DIR,
+      group  =&gt; GROUP_OF_SHARE_DIR,
+      mode   =&gt; MODE_OF_SHARE_DIR,
+    }
+  }</code></pre>
 
-<h2 id="label-Variables">Variables</h2>
-
-<p>Here you should define a list of variables that this module would require.</p>
-<ul><li>
-<p><code>sample variable</code>  Explanation of how this variable affects the
-function of this class and if  it has a default. e.g. “The parameter
-enc_ntp_servers must be set by the  External Node Classifier as a comma
-separated list of hostnames.” (Note,  global variables should be avoided in
-favor of class parameters as  of Puppet 2.6.)</p>
-</li></ul>
-
-<h2 id="label-Examples">Examples</h2>
-
-<h2 id="label-Authors">Authors</h2>
-
-<p>Author Name <a href="mailto:author@domain.com">author@domain.com</a></p>
-
-<h2 id="label-Copyright">Copyright</h2>
-
-<p>Copyright 2017 Your name here, unless otherwise noted.</p>
+<pre class="code ruby"><code class="ruby">share_hash =&gt; {
+    &quot;/scratch/foo&quot; =&gt; {
+      &quot;client&quot; =&gt; &quot;192.168.0.10(ro) 192.168.0.11(rw)&quot;,
+    },
+    &quot;/scratch/bar&quot; =&gt; {
+      &quot;client&quot; =&gt; &quot;192.168.*(ro)&quot;,
+      &quot;owner&quot;  =&gt; &quot;foo&quot;,
+      &quot;group&quot;  =&gt; &quot;bar&quot;,
+      &quot;mode&quot;   =&gt; &quot;0755&quot;,
+    },
+    &quot;/scratch/testcase&quot; =&gt; {
+      &quot;client&quot;     =&gt; &quot;*(ro)&quot;,
+      &quot;manage_dir&quot; =&gt; false,
+    },</code></pre>
 
   </div>
 </div>
@@ -117,11 +120,225 @@ favor of class parameters as  of Puppet 2.6.)</p>
     <p class="tag_title">Examples:</p>
     
       
-      <pre class="example code"><code>class { &#39;nfs_server&#39;:
-  servers =&gt; [ &#39;pool.ntp.org&#39;, &#39;ntp.local.company.com&#39; ],
-}</code></pre>
+        <p class="example_title"><div class='inline'>
+<p>real-world share_hash</p>
+</div></p>
+      
+      <pre class="example code"><code></code></pre>
     
   </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>package</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>$nfs_server::params::package</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Name of nfs kernel server package to install</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>manage_package</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>true to manage the package with Puppet</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>ensure_package</span>
+      
+      
+        <span class='type'>(<tt>Enum[present,absent]</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>present</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>State to ensure the package to</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>share_hash</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Hash of shares to export (see above)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>default_share_owner</span>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Default owner of shares (override in hash)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>default_share_group</span>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Default group of shares (override in hash)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>default_owner</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>$nfs_server::params::default_owner</tt>)</em>
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>default_group</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>$nfs_server::params::default_group</tt>)</em>
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>default_mode</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>&quot;0770&quot;</tt>)</em>
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>manage_service</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>$nfs_server::params::service</tt>)</em>
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service_ensure</span>
+      
+      
+        <span class='type'>(<tt>Enum[running,stopped]</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>running</tt>)</em>
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service_enable</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>exports</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>&quot;/etc/exports&quot;</tt>)</em>
+      
+      
+    </li>
+  
+</ul>
 
 
 </div><div class="method_details_list">
@@ -131,17 +348,145 @@ favor of class parameters as  of Puppet 2.6.)</p>
         <pre class="lines">
 
 
+44
 45
 46
 47
-48</pre>
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111</pre>
       </td>
       <td>
-        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 45</span>
+        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 44</span>
 
-class nfs_server {
+class nfs_server(
+    String                $package        = $nfs_server::params::package,
+    Boolean               $manage_package = true,
+    Enum[present,absent]  $ensure_package = present,
+    Hash                  $share_hash     = {},
+    String                $default_owner  = $nfs_server::params::default_owner,
+    String                $default_group  = $nfs_server::params::default_group,
+    String                $default_mode   = &quot;0770&quot;,
+    Boolean               $manage_service = true,
+    String                $service        = $nfs_server::params::service,
+    Enum[running,stopped] $service_ensure = running,
+    Boolean               $service_enable = true,
+    String                $exports        = &quot;/etc/exports&quot;,
+) inherits nfs_server::params {
+
+  if $manage_package {
+    package { $package:
+      ensure =&gt; $ensure_package,
+    }
+  }
+
+  file { &quot;/etc/exports&quot;:
+    ensure =&gt; file,
+    owner  =&gt; &quot;root&quot;,
+    group  =&gt; &quot;root&quot;,
+    mode   =&gt; &quot;0644&quot;,
+  }
+
+  $share_hash.each |$share_dir, $opts| {
+
+    # manage the shared directory with puppet unless we were told not to (it
+    # could be a mounted elsewhere)
+    if pick($opts[&quot;manage_dir&quot;],true) {
+      $mode = pick($opts[&#39;mode&#39;], $default_mode)
+      file { $share_dir:
+        ensure =&gt; directory,
+        owner  =&gt; pick($opts[&#39;owner&#39;], $default_owner),
+        group  =&gt; pick($opts[&#39;group&#39;], $default_group),
+        mode   =&gt; $mode,
+      }
+    }
+
+    # munge the line for /etc/exports
+    file_line { &quot;exports_for_${share_dir}&quot;:
+      ensure =&gt; present,
+      path   =&gt; $exports,
+      line   =&gt; &quot;${share_dir}\t${opts[&#39;client&#39;]}&quot;,
+      match  =&gt; &quot;^${share_dir}\t&quot;,
+      notify =&gt; Exec[&quot;reload_nfs_exports&quot;],
+    }
+  }
+
+  exec { &quot;reload_nfs_exports&quot;:
+    command     =&gt; &quot;exportfs -a&quot;,
+    path        =&gt; [&quot;/usr/sbin&quot;, &quot;/sbin&quot;],
+    refreshonly =&gt; true,
+    require     =&gt; Service[$service],
+  }
 
 
+  if $manage_service {
+    service { $service:
+      ensure  =&gt; $service_ensure,
+      enable  =&gt; $service_enable,
+      require =&gt; Package[$package],
+    }
+  }
 }</pre>
       </td>
     </tr>

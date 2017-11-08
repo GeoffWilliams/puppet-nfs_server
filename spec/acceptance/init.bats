@@ -1,48 +1,63 @@
+if [[ -f /etc/redhat-release ]] ; then
+    DAEMON="nfs-server"
+    DEFAULT_OWNER="nfsnobody"
+    DEFAULT_GROUP="nfsnobody"
+else
+    DAEMON="nfs-kernel-server"
+    DEFAULT_OWNER="nobody"
+    DEFAULT_GROUP="nogroup"
+fi
+
 @test "service operational" {
-    systemctl status nfs-kernel-server
+    systemctl status $DAEMON
 }
 
 #
-# /shared/foo
+# /scratch/foo
 #
 
-@test "default user permission on /shared/foo" {
-    [[ $(stat -c %U /shared/foo) == "nobody" ]]
+@test "default user permission on /scratch/foo" {
+    [[ $(stat -c %U /scratch/foo) == $DEFAULT_OWNER ]]
 }
-@test "default group on /shared/foo" {
-    [[ $(stat -c %G /shared/foo) == "nogroup" ]]
+@test "default group on /scratch/foo" {
+    [[ $(stat -c %G /scratch/foo) == $DEFAULT_GROUP ]]
 }
 @test "default mode on shared dir" {
-    [[ $(stat -c %a /shared/foo) == "770" ]]
+    [[ $(stat -c %a /scratch/foo) == "770" ]]
 }
-@test "/shared/foo added to exports" {
-    grep /shared/foo /etc/exports
+@test "/scratch/foo added to exports" {
+    grep /scratch/foo /etc/exports
 }
 
 #
-# /shared/bar
+# /scratch/bar
 #
 
-@test "set user permission on /shared/bar" {
-    [[ $(stat -c %U /shared/bar) == "foo" ]]
+@test "set user permission on /scratch/bar" {
+    [[ $(stat -c %U /scratch/bar) == "foo" ]]
 }
-@test "set group on /shared/bar" {
-    [[ $(stat -c %G /shared/bar) == "bar" ]]
+@test "set group on /scratch/bar" {
+    [[ $(stat -c %G /scratch/bar) == "bar" ]]
 }
 @test "default mode on shared dir" {
-    [[ $(stat -c %a /shared/bar) == "755" ]]
+    [[ $(stat -c %a /scratch/bar) == "755" ]]
 }
-@test "/shared/bar added to exports" {
-    grep /shared/bar /etc/exports
+@test "/scratch/bar added to exports" {
+    grep /scratch/bar /etc/exports
 }
 
 #
-# /shared/special
+# /scratc/testcase - functional test
 #
-@test "unmanaged shared dir should not be created" {
-    [[ ! -d /shared/special ]]
+
+@test "/scratch/testcase added to exports" {
+    grep /scratch/testcase /etc/exports
 }
 
-@test "/shared/special added to exports" {
-    grep /shared/special /etc/exports
+@test "mount an nfs share from /scratch/testcase" {
+    mount localhost:/scratch/testcase /tmp/testcase_mount
+}
+
+@test "read a file from mounted nfs share" {
+    grep hello /tmp/testcase_mount/test
 }
