@@ -1,9 +1,15 @@
-# BATS test file to run before executing 'examples/init.pp' with puppet.
-#
-# For more info on BATS see https://github.com/sstephenson/bats
+@test "test user foo exists" {
+    grep foo /etc/passwd
+}
 
-# Tests are really easy! just the exit status of running a command...
-@test "addition using bc" {
-  result="$(ls /)"
-  [ "$?" -eq 0 ]
+@test "test user bar exists" {
+    grep foo /etc/passwd
+}
+
+@test "test group foo exists" {
+    grep foo /etc/group
+}
+
+@test "test group bar exists" {
+    grep foo /etc/group
 }
