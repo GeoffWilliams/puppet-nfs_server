@@ -6,7 +6,7 @@
 <title>
   Puppet Class: nfs_server
   
-    &mdash; Documentation by YARD 0.9.9
+    &mdash; Documentation by YARD 0.9.12
   
 </title>
 
@@ -95,7 +95,8 @@ has the form:</p>
       group  =&gt; GROUP_OF_SHARE_DIR,
       mode   =&gt; MODE_OF_SHARE_DIR,
     }
-  }</code></pre>
+  }
+</code></pre>
 
 <pre class="code ruby"><code class="ruby">share_hash =&gt; {
     &quot;/scratch/foo&quot; =&gt; {
@@ -110,7 +111,8 @@ has the form:</p>
     &quot;/scratch/testcase&quot; =&gt; {
       &quot;client&quot;     =&gt; &quot;*(ro)&quot;,
       &quot;manage_dir&quot; =&gt; false,
-    },</code></pre>
+    },
+</code></pre>
 
   </div>
 </div>
@@ -161,7 +163,7 @@ has the form:</p>
       
         &mdash;
         <div class='inline'>
-<p>true to manage the package with Puppet</p>
+<p><code>true</code> to manage the package with Puppet</p>
 </div>
       
     </li>
@@ -204,38 +206,6 @@ has the form:</p>
   
     <li>
       
-        <span class='name'>default_share_owner</span>
-      
-      
-        <span class='type'></span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Default owner of shares (override in hash)</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>default_share_group</span>
-      
-      
-        <span class='type'></span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Default group of shares (override in hash)</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
         <span class='name'>default_owner</span>
       
       
@@ -244,6 +214,11 @@ has the form:</p>
       
         <em class="default">(defaults to: <tt>$nfs_server::params::default_owner</tt>)</em>
       
+      
+        &mdash;
+        <div class='inline'>
+<p>Default owner of shares (override in hash)</p>
+</div>
       
     </li>
   
@@ -258,6 +233,11 @@ has the form:</p>
         <em class="default">(defaults to: <tt>$nfs_server::params::default_group</tt>)</em>
       
       
+        &mdash;
+        <div class='inline'>
+<p>Default group of shares (override in hash)</p>
+</div>
+      
     </li>
   
     <li>
@@ -270,6 +250,11 @@ has the form:</p>
       
         <em class="default">(defaults to: <tt>&quot;0770&quot;</tt>)</em>
       
+      
+        &mdash;
+        <div class='inline'>
+<p>Default mode of shares (override in hash)</p>
+</div>
       
     </li>
   
@@ -284,6 +269,11 @@ has the form:</p>
         <em class="default">(defaults to: <tt>true</tt>)</em>
       
       
+        &mdash;
+        <div class='inline'>
+<p><code>true</code> to manage the service with Puppet</p>
+</div>
+      
     </li>
   
     <li>
@@ -296,6 +286,11 @@ has the form:</p>
       
         <em class="default">(defaults to: <tt>$nfs_server::params::service</tt>)</em>
       
+      
+        &mdash;
+        <div class='inline'>
+<p>Name of the nfs service on this system</p>
+</div>
       
     </li>
   
@@ -310,6 +305,11 @@ has the form:</p>
         <em class="default">(defaults to: <tt>running</tt>)</em>
       
       
+        &mdash;
+        <div class='inline'>
+<p>State to ensure the service to (if managed)</p>
+</div>
+      
     </li>
   
     <li>
@@ -322,6 +322,11 @@ has the form:</p>
       
         <em class="default">(defaults to: <tt>true</tt>)</em>
       
+      
+        &mdash;
+        <div class='inline'>
+<p><code>true</code> to start the service on boot</p>
+</div>
       
     </li>
   
@@ -336,6 +341,11 @@ has the form:</p>
         <em class="default">(defaults to: <tt>&quot;/etc/exports&quot;</tt>)</em>
       
       
+        &mdash;
+        <div class='inline'>
+<p>location of the <code>exports</code> file (usually /etc/exports)</p>
+</div>
+      
     </li>
   
 </ul>
@@ -348,12 +358,6 @@ has the form:</p>
         <pre class="lines">
 
 
-44
-45
-46
-47
-48
-49
 50
 51
 52
@@ -415,10 +419,20 @@ has the form:</p>
 108
 109
 110
-111</pre>
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121</pre>
       </td>
       <td>
-        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 44</span>
+        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 50</span>
 
 class nfs_server(
     String                $package        = $nfs_server::params::package,
@@ -472,21 +486,25 @@ class nfs_server(
     }
   }
 
-  exec { &quot;reload_nfs_exports&quot;:
-    command     =&gt; &quot;exportfs -a&quot;,
-    path        =&gt; [&quot;/usr/sbin&quot;, &quot;/sbin&quot;],
-    refreshonly =&gt; true,
-    require     =&gt; Service[$service],
-  }
-
-
   if $manage_service {
+    $service_require = Service[$service]
+
     service { $service:
       ensure  =&gt; $service_ensure,
       enable  =&gt; $service_enable,
       require =&gt; Package[$package],
     }
+  } else {
+    $service_require = undef
   }
+
+  exec { &quot;reload_nfs_exports&quot;:
+    command     =&gt; &quot;exportfs -a&quot;,
+    path        =&gt; [&quot;/usr/sbin&quot;, &quot;/sbin&quot;],
+    refreshonly =&gt; true,
+    require     =&gt; $service_require,
+  }
+
 }</pre>
       </td>
     </tr>

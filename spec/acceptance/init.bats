@@ -8,9 +8,10 @@ else
     DEFAULT_GROUP="nogroup"
 fi
 
-@test "service operational" {
-    systemctl status $DAEMON
-}
+# cannot test service operational due to kernel lockup
+# @test "service operational" {
+#     systemctl status $DAEMON
+# }
 
 #
 # /scratch/foo
@@ -54,10 +55,11 @@ fi
     grep /scratch/testcase /etc/exports
 }
 
-@test "mount an nfs share from /scratch/testcase" {
-    mount localhost:/scratch/testcase /tmp/testcase_mount
-}
-
-@test "read a file from mounted nfs share" {
-    grep hello /tmp/testcase_mount/test
-}
+# disabled due to kernel crash on Linux 4.13
+# @test "mount an nfs share from /scratch/testcase" {
+#     mount localhost:/scratch/testcase /tmp/testcase_mount
+# }
+#
+# @test "read a file from mounted nfs share" {
+#     grep hello /tmp/testcase_mount/test
+# }

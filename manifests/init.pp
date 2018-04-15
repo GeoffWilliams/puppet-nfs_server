@@ -36,11 +36,17 @@
 # ```
 #
 # @param package Name of nfs kernel server package to install
-# @param manage_package true to manage the package with Puppet
+# @param manage_package `true` to manage the package with Puppet
 # @param ensure_package State to ensure the package to
 # @param share_hash Hash of shares to export (see above)
-# @param default_share_owner Default owner of shares (override in hash)
-# @param default_share_group Default group of shares (override in hash)
+# @param default_owner Default owner of shares (override in hash)
+# @param default_group Default group of shares (override in hash)
+# @param default_mode Default mode of shares (override in hash)
+# @param manage_service `true` to manage the service with Puppet
+# @param service Name of the nfs service on this system
+# @param service_ensure State to ensure the service to (if managed)
+# @param service_enable `true` to start the service on boot
+# @param exports location of the `exports` file (usually /etc/exports)
 class nfs_server(
     String                $package        = $nfs_server::params::package,
     Boolean               $manage_package = true,
@@ -93,19 +99,23 @@ class nfs_server(
     }
   }
 
-  exec { "reload_nfs_exports":
-    command     => "exportfs -a",
-    path        => ["/usr/sbin", "/sbin"],
-    refreshonly => true,
-    require     => Service[$service],
-  }
-
-
   if $manage_service {
+    $service_require = Service[$service]
+
     service { $service:
       ensure  => $service_ensure,
       enable  => $service_enable,
       require => Package[$package],
     }
+  } else {
+    $service_require = undef
   }
+
+  exec { "reload_nfs_exports":
+    command     => "exportfs -a",
+    path        => ["/usr/sbin", "/sbin"],
+    refreshonly => true,
+    require     => $service_require,
+  }
+
 }

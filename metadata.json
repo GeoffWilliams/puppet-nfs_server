@@ -1,6 +1,6 @@
 {
   "name": "geoffwilliams-nfs_server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "geoffwilliams",
   "summary": "NFS v4 server support for Linux",
   "license": "Apache-2.0",
@@ -14,12 +14,6 @@
     }
   ],
   "operatingsystem_support": [
-    {
-      "operatingsystem": "ddd",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [

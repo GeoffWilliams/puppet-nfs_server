@@ -5,8 +5,12 @@ file { "/shared":
   group  => "root",
   mode  => "0755",
 }
+
+# must not attempt to start the service in docker as it results in a kernel
+# crash requireing a reboot :)
 class { "nfs_server":
-  share_hash => {
+  manage_service => false,
+  share_hash     => {
     "/scratch/foo" => {
       "client" => "192.168.0.10(ro) 192.168.0.11(rw)",
     },
@@ -20,5 +24,5 @@ class { "nfs_server":
       "client"     => "*(ro)",
       "manage_dir" => false,
     },
-  }
+  },
 }
