@@ -17,8 +17,6 @@
 # ```
 #
 # @example real-world share_hash
-#
-# ```
 #   share_hash => {
 #     "/scratch/foo" => {
 #       "client" => "192.168.0.10(ro) 192.168.0.11(rw)",
@@ -33,7 +31,6 @@
 #       "client"     => "*(ro)",
 #       "manage_dir" => false,
 #     },
-# ```
 #
 # @param package Name of nfs kernel server package to install
 # @param manage_package `true` to manage the package with Puppet

@@ -98,22 +98,6 @@ has the form:</p>
   }
 </code></pre>
 
-<pre class="code ruby"><code class="ruby">share_hash =&gt; {
-    &quot;/scratch/foo&quot; =&gt; {
-      &quot;client&quot; =&gt; &quot;192.168.0.10(ro) 192.168.0.11(rw)&quot;,
-    },
-    &quot;/scratch/bar&quot; =&gt; {
-      &quot;client&quot; =&gt; &quot;192.168.*(ro)&quot;,
-      &quot;owner&quot;  =&gt; &quot;foo&quot;,
-      &quot;group&quot;  =&gt; &quot;bar&quot;,
-      &quot;mode&quot;   =&gt; &quot;0755&quot;,
-    },
-    &quot;/scratch/testcase&quot; =&gt; {
-      &quot;client&quot;     =&gt; &quot;*(ro)&quot;,
-      &quot;manage_dir&quot; =&gt; false,
-    },
-</code></pre>
-
   </div>
 </div>
 <div class="tags">
@@ -126,7 +110,20 @@ has the form:</p>
 <p>real-world share_hash</p>
 </div></p>
       
-      <pre class="example code"><code></code></pre>
+      <pre class="example code"><code>share_hash =&gt; {
+  &quot;/scratch/foo&quot; =&gt; {
+    &quot;client&quot; =&gt; &quot;192.168.0.10(ro) 192.168.0.11(rw)&quot;,
+  },
+  &quot;/scratch/bar&quot; =&gt; {
+    &quot;client&quot; =&gt; &quot;192.168.*(ro)&quot;,
+    &quot;owner&quot;  =&gt; &quot;foo&quot;,
+    &quot;group&quot;  =&gt; &quot;bar&quot;,
+    &quot;mode&quot;   =&gt; &quot;0755&quot;,
+  },
+  &quot;/scratch/testcase&quot; =&gt; {
+    &quot;client&quot;     =&gt; &quot;*(ro)&quot;,
+    &quot;manage_dir&quot; =&gt; false,
+  },</code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -358,6 +355,9 @@ has the form:</p>
         <pre class="lines">
 
 
+47
+48
+49
 50
 51
 52
@@ -426,13 +426,10 @@ has the form:</p>
 115
 116
 117
-118
-119
-120
-121</pre>
+118</pre>
       </td>
       <td>
-        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 50</span>
+        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 47</span>
 
 class nfs_server(
     String                $package        = $nfs_server::params::package,
